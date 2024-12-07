@@ -7,14 +7,17 @@ const deployVoting: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
     const { deployer } = await getNamedAccounts();
 
-    const voting = await deploy('Voting', {
+    const proposalNames = ["Option A", "Option B", "Option C"];
+
+    const voting = await deploy('VotingContract', {
         from: deployer,
-        args: [],
+        args: [proposalNames],
         log: true,
     });
 
-    console.log("Развернули смарт контракрт по адрессу:", voting.address);
+    console.log("VotingContract deployed to:", voting.address);
 };
 
-export default deployVoting;
 deployVoting.tags = ['Voting'];
+
+export default deployVoting;

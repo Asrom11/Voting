@@ -4,100 +4,21 @@
  */
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
-export const deployedContracts = {
+const deployedContracts = {
   31337: {
-    VotingSystem: {
+    VotingContract: {
       address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
-          inputs: [],
+          inputs: [
+            {
+              internalType: "string[]",
+              name: "proposalNames",
+              type: "string[]",
+            },
+          ],
           stateMutability: "nonpayable",
           type: "constructor",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-          ],
-          name: "OwnableInvalidOwner",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "OwnableUnauthorizedAccount",
-          type: "error",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "previousOwner",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "newOwner",
-              type: "address",
-            },
-          ],
-          name: "OwnershipTransferred",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "proposalId",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "description",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "deadline",
-              type: "uint256",
-            },
-          ],
-          name: "ProposalCreated",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "proposalId",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "bool",
-              name: "isActive",
-              type: "bool",
-            },
-          ],
-          name: "ProposalStatusChanged",
-          type: "event",
         },
         {
           anonymous: false,
@@ -109,9 +30,9 @@ export const deployedContracts = {
               type: "address",
             },
             {
-              indexed: true,
+              indexed: false,
               internalType: "uint256",
-              name: "proposalId",
+              name: "proposalIndex",
               type: "uint256",
             },
           ],
@@ -119,60 +40,38 @@ export const deployedContracts = {
           type: "event",
         },
         {
-          inputs: [
-            {
-              internalType: "string",
-              name: "_description",
-              type: "string",
-            },
-          ],
-          name: "createProposal",
+          anonymous: false,
+          inputs: [],
+          name: "VotingEnded",
+          type: "event",
+        },
+        {
+          inputs: [],
+          name: "endVoting",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
         },
         {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_proposalId",
-              type: "uint256",
-            },
-          ],
-          name: "getProposal",
-          outputs: [
-            {
-              internalType: "string",
-              name: "description",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "voteCount",
-              type: "uint256",
-            },
-            {
-              internalType: "bool",
-              name: "isActive",
-              type: "bool",
-            },
-            {
-              internalType: "uint256",
-              name: "deadline",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [],
-          name: "getProposalsCount",
+          name: "getProposals",
           outputs: [
             {
-              internalType: "uint256",
+              components: [
+                {
+                  internalType: "string",
+                  name: "name",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "voteCount",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct VotingContract.Proposal[]",
               name: "",
-              type: "uint256",
+              type: "tuple[]",
             },
           ],
           stateMutability: "view",
@@ -203,7 +102,7 @@ export const deployedContracts = {
           outputs: [
             {
               internalType: "string",
-              name: "description",
+              name: "name",
               type: "string",
             },
             {
@@ -211,58 +110,15 @@ export const deployedContracts = {
               name: "voteCount",
               type: "uint256",
             },
-            {
-              internalType: "bool",
-              name: "isActive",
-              type: "bool",
-            },
-            {
-              internalType: "uint256",
-              name: "deadline",
-              type: "uint256",
-            },
           ],
           stateMutability: "view",
           type: "function",
         },
         {
-          inputs: [],
-          name: "renounceOwnership",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
           inputs: [
             {
               internalType: "uint256",
-              name: "_duration",
-              type: "uint256",
-            },
-          ],
-          name: "setVotingDuration",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "newOwner",
-              type: "address",
-            },
-          ],
-          name: "transferOwnership",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_proposalId",
+              name: "proposalIndex",
               type: "uint256",
             },
           ],
@@ -278,23 +134,13 @@ export const deployedContracts = {
               name: "",
               type: "address",
             },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
           ],
           name: "voters",
           outputs: [
             {
               internalType: "bool",
-              name: "hasVoted",
+              name: "",
               type: "bool",
-            },
-            {
-              internalType: "uint256",
-              name: "votedProposalId",
-              type: "uint256",
             },
           ],
           stateMutability: "view",
@@ -302,23 +148,19 @@ export const deployedContracts = {
         },
         {
           inputs: [],
-          name: "votingDuration",
+          name: "votingEnded",
           outputs: [
             {
-              internalType: "uint256",
+              internalType: "bool",
               name: "",
-              type: "uint256",
+              type: "bool",
             },
           ],
           stateMutability: "view",
           type: "function",
         },
       ],
-      inheritedFunctions: {
-        owner: "@openzeppelin/contracts/access/Ownable.sol",
-        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
-        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
-      },
+      inheritedFunctions: {},
     },
   },
 } as const;
