@@ -19,6 +19,7 @@
     "@tanstack/react-query": "^5.59.15",
     "@uniswap/sdk-core": "^5.8.2",
     "@uniswap/v2-sdk": "^4.6.1",
+    "@wagmi/core": "latest",
     "blo": "^1.2.0",
     "burner-connector": "^0.0.8",
     "daisyui": "4.12.10",
@@ -31,8 +32,8 @@
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.0",
     "usehooks-ts": "^3.1.0",
-    "viem": "2.21.32",
-    "wagmi": "2.12.23",
+    "viem": "latest",
+    "wagmi": "latest",
     "zustand": "^5.0.0"
   },
   "devDependencies": {
