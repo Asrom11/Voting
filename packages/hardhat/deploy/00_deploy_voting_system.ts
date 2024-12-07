@@ -1,20 +1,20 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
 
-const deployVotingSystem: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const { deployer } = await hre.getNamedAccounts();
-  const { deploy } = hre.deployments;
+const deployVoting: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
+    const { deployments, getNamedAccounts } = hre;
+    const { deploy } = deployments;
 
-  await deploy("VotingSystem", {
-    from: deployer,
-    args: [],
-    log: true,
-    autoMine: true,
-  });
+    const { deployer } = await getNamedAccounts();
 
-  const votingSystem = await hre.ethers.getContract("VotingSystem", deployer);
-  console.log("VotingSystem deployed to:", votingSystem.getAddress());
+    const voting = await deploy('Voting', {
+        from: deployer,
+        args: [],
+        log: true,
+    });
+
+    console.log("Развернули смарт контракрт по адрессу:", voting.address);
 };
 
-export default deployVotingSystem;
-deployVotingSystem.tags = ["VotingSystem"];
+export default deployVoting;
+deployVoting.tags = ['Voting'];

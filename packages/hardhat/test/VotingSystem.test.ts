@@ -1,58 +1,69 @@
-﻿import { expect } from "chai";
-import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
+﻿import { ethers } from 'hardhat';
+import { expect } from 'chai';
+import { Voting, Voting__factory } from '../typechain-types';
 
-describe("VotingSystem", function () {
-    let votingSystem: any;
-    let owner: SignerWithAddress;
-    let voter1: SignerWithAddress;
-    let voter2: SignerWithAddress;
+describe('Voting Contract', () => {
+    let voting: Voting;
+    let owner: any;
+    let addr1: any;
+    let addr2: any;
 
-    beforeEach(async function () {
-        [owner, voter1, voter2] = await ethers.getSigners();
-
-        const VotingSystemFactory = await ethers.getContractFactory("VotingSystem", owner);
-        votingSystem = await VotingSystemFactory.deploy();
-        await votingSystem.deployed();
+    beforeEach(async () => {
+        const VotingFactory = await ethers.getContractFactory('Voting') as Voting__factory;
+        [owner, addr1, addr2] = await ethers.getSigners();
+        voting = await VotingFactory.deploy() as Voting;
+        voting.waitForDeployment();
     });
 
-    describe("Proposal Creation", function () {
-        it("should allow owner to create proposal", async function () {
-            const tx = await votingSystem.connect(owner).createProposal("Test Proposal");
-            await tx.wait();
-
-            const [description, voteCount, isActive, deadline] = await votingSystem.getProposal(0);
-            expect(description).to.equal("Test Proposal");
-        });
-
-        it("should not allow non-owner to create proposal", async function () {
-            await expect(
-                votingSystem.connect(voter1).createProposal("Test Proposal")
-            ).to.be.revertedWithCustomError(votingSystem, "OwnableUnauthorizedAccount");
-        });
+    it('Должен добавить кандидата', async () => {
+        await voting.addCandidate('Alice');
+        const candidate = await voting.candidates(1);
+        expect(candidate.id).to.equal(1);
+        expect(candidate.name).to.equal('Alice');
+        expect(candidate.voteCount).to.equal(0);
     });
 
-    describe("Voting", function () {
-        beforeEach(async function () {
-            const tx = await votingSystem.connect(owner).createProposal("Test Proposal");
-            await tx.wait();
-        });
+    it('Должен позволить пользователю голосовать', async () => {
+        await voting.addCandidate('Bob');
+        await voting.connect(addr1).vote(1);
+        const candidate = await voting.candidates(1);
+        expect(candidate.voteCount).to.equal(1);
+    });
 
-        it("should allow voting", async function () {
-            const tx = await votingSystem.connect(voter1).vote(0);
-            await tx.wait();
+    it('Должен предотвратить повторное голосование одним и тем же пользователем', async () => {
+        await voting.addCandidate('Charlie');
+        await voting.connect(addr1).vote(1);
+        await expect(voting.connect(addr1).vote(1)).to.be.revertedWith('Вы уже проголосовали.');
+    });
 
-            const [, voteCount,,] = await votingSystem.getProposal(0);
-            expect(voteCount).to.equal(1);
-        });
+    it('Должен проверять корректность ID кандидата при голосовании', async () => {
+        await expect(voting.vote(999)).to.be.revertedWith('Неверный ID кандидата.');
+    });
 
-        it("should not allow double voting", async function () {
-            const tx = await votingSystem.connect(voter1).vote(0);
-            await tx.wait();
+    it('Должен возвращать информацию о кандидате', async () => {
+        await voting.addCandidate('Diana');
+        const [id, name, voteCount] = await voting.getCandidate(1);
+        expect(id).to.equal(1);
+        expect(name).to.equal('Diana');
+        expect(voteCount).to.equal(0);
+    });
 
-            await expect(
-                votingSystem.connect(voter1).vote(0)
-            ).to.be.revertedWith("Already voted");
-        });
+    it('Должен правильно учитывать количество кандидатов', async () => {
+        await voting.addCandidate('Eve');
+        await voting.addCandidate('Frank');
+        const count = await voting.candidatesCount();
+        expect(count).to.equal(2);
+    });
+
+    it('Должен предотвращать голосование без кандидатов', async () => {
+        await expect(voting.connect(addr1).vote(1)).to.be.revertedWith('Неверный ID кандидата.');
+    });
+
+    it('Должен разрешать нескольким пользователям голосовать за одного кандидата', async () => {
+        await voting.addCandidate('Grace');
+        await voting.connect(addr1).vote(1);
+        await voting.connect(addr2).vote(1);
+        const candidate = await voting.candidates(1);
+        expect(candidate.voteCount).to.equal(2);
     });
 });

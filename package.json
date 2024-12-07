@@ -39,7 +39,8 @@
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
     "husky": "^9.1.6",
-    "lint-staged": "^15.2.10"
+    "lint-staged": "^15.2.10",
+    "ts-node": "^10.9.2"
   },
   "engines": {
     "node": ">=18.18.0"
